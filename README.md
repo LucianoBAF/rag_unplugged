@@ -26,11 +26,9 @@ The Python app (~500 lines) is the only custom approach; everything else is an o
 
 ## Prerequisites
 
-| Requirement | Why |
-|-------------|-----|
-| Docker + Docker Compose | Runs everything |
-| NVIDIA GPU + [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) | GPU passthrough for Ollama |
-| Ollama models pulled | `ollama pull llama3.1` and `ollama pull nomic-embed-text` |
+* Docker + Docker Compose
+* NVIDIA GPU + [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) - GPU passthrough for Ollama 
+* Ollama models pulled - `ollama pull llama3.1` and `ollama pull nomic-embed-text` 
 
 ## Quick Start
 
@@ -111,4 +109,5 @@ docker compose restart litellm
 1. Create `app/channels/my_channel.py` implementing the `Channel` ABC
 2. Wire startup/shutdown in `app/main.py`
 3. Done — the orchestrator (`core/assistant.chat()`) is channel-agnostic
+
 
