@@ -36,7 +36,7 @@ The Python app (~500 lines) is the only custom approach; everything else is an o
 
 ```bash
 # 1. Clone and configure
-cp .env.example .env
+cp example.env .env
 # Edit .env → set TELEGRAM_BOT_TOKEN (see app/channels/README.md)
 
 # 2. Start everything
@@ -58,7 +58,7 @@ curl -X POST http://localhost:8080/api/chat \
 
 ## Configuration
 
-All settings live in `.env` (see `.env.example` for documentation).
+All settings live in `.env` (see `example.env` for documentation).
 Model routing is in `litellm_config.yaml`.
 
 ### Changing models
@@ -111,3 +111,4 @@ docker compose restart litellm
 1. Create `app/channels/my_channel.py` implementing the `Channel` ABC
 2. Wire startup/shutdown in `app/main.py`
 3. Done — the orchestrator (`core/assistant.chat()`) is channel-agnostic
+
