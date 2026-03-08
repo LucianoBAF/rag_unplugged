@@ -1,0 +1,79 @@
+services:
+  # ── Local LLM runtime ──────────────────────────
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ./data/ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  # ── OpenAI-compatible proxy → Ollama ───────────
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    volumes:
+      - ./litellm_config.yaml:/app/config.yaml
+    command: ["--config", "/app/config.yaml"]
+    ports:
+      - "4000:4000"
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  # ── Vector store ───────────────────────────────
+  chromadb:
+    image: chromadb/chroma:1.5.3
+    volumes:
+      - ./data/chroma:/data
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ── Self-hosted web search ─────────────────────
+  searxng:
+    image: searxng/searxng:latest
+    volumes:
+      - ./searxng:/etc/searxng
+    ports:
+      - "8888:8080"
+    restart: unless-stopped
+
+  # ── WhatsApp HTTP API ──────────────────────────
+  waha:
+    image: devlikeapro/waha
+    ports:
+      - "3000:3000"
+    environment:
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WAHA_PRINT_QR=true
+    restart: unless-stopped
+
+  # ── The assistant ──────────────────────────────
+  app:
+    build: ./app
+    ports:
+      - "8080:8080"
+    env_file: .env
+    volumes:
+      - ./data:/data
+      - ./documents:/documents
+    depends_on:
+      chromadb:
+        condition: service_healthy
+      litellm:
+        condition: service_started
+      searxng:
+        condition: service_started
+    restart: unless-stopped
