@@ -19,8 +19,10 @@ class Settings(BaseSettings):
     chromadb_host: str = "chromadb"
     chromadb_port: int = 8000
 
-    # ── SearXNG ───────────────────────────────────
+    # ── Web search ─────────────────────────────────
+    search_provider: str = "searxng"
     searxng_url: str = "http://searxng:8080"
+    tavily_api_key: str = ""
 
     # ── Telegram ──────────────────────────────────
     telegram_bot_token: str = ""
